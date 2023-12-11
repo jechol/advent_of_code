@@ -2237,7 +2237,6 @@ solution51 = fn input ->
       end
     end)
   end)
-  |> tap(fn x -> [0 | x] |> IO.inspect() end)
   |> Enum.min()
 end
 
@@ -2246,4 +2245,125 @@ solution51.(sample51)
 
 ```elixir
 solution51.(input51)
+```
+
+## Day 5 - Part 2
+
+```elixir
+sample52 = sample51
+input52 = input51
+```
+
+```elixir
+solution52 = fn input ->
+  lines = input |> String.split("\n", trim: true)
+
+  maps =
+    [
+      "seed-to-soil map:",
+      "soil-to-fertilizer map:",
+      "fertilizer-to-water map:",
+      "water-to-light map:",
+      "light-to-temperature map:",
+      "temperature-to-humidity map:",
+      "humidity-to-location map:"
+    ]
+    |> Enum.map(fn s -> lines |> Enum.find_index(&(&1 == s)) end)
+    |> then(&(&1 ++ [lines |> Enum.count()]))
+    |> Enum.chunk_every(2, 1, :discard)
+    |> Enum.map(fn [first, last] ->
+      lines
+      |> Enum.drop(first + 1)
+      |> Enum.take(last - first - 1)
+      |> Enum.map(fn line ->
+        [d, s, l] = Regex.scan(~r/\d+/, line) |> Enum.map(fn [s] -> String.to_integer(s) end)
+        {s, s + l, d - s}
+      end)
+      |> Enum.sort_by(fn {_, s, _} -> s end)
+    end)
+
+  Regex.scan(~r/\d+/, lines |> List.first())
+  |> Enum.map(fn [s] -> String.to_integer(s) end)
+  |> Enum.chunk_every(2, 2, :discard)
+  |> Enum.map(fn [first, length] -> {first, first + length} end)
+  |> Enum.take(1)
+  |> Enum.flat_map(fn seed ->
+    maps
+    # |> Enum.take(2)
+    |> Enum.with_index()
+    |> Enum.reduce([seed], fn {map, i}, ranges ->
+      ranges
+      |> IO.inspect(label: "Before map #{i}")
+      |> Enum.flat_map(fn {rf, rl} = _range ->
+        # {rf, rl} |> IO.inspect(label: "rf, rl")
+        map
+        # |> IO.inspect(label: "map entry")
+        |> Enum.with_index()
+        |> Enum.reduce({rf, []}, fn {{sf, sl, offset}, i}, {acc_f, acc_d} = _acc ->
+          {{{sf, sl, offset}, i}, {acc_f, acc_d}} |> IO.inspect(label: "reducing...")
+
+          interval =
+            if acc_f < sf and sf <= rl do
+              [{acc_f, sf, 0}]
+            else
+              []
+            end
+            |> IO.inspect(label: "interval")
+
+          f = max(sf, acc_f)
+          l = min(sl, rl)
+
+          {acc_f, overlapped} =
+            if f < l do
+              {l, [{f, l, offset}]}
+            else
+              {acc_f, []}
+            end
+            |> IO.inspect(label: "overlap")
+
+          {acc_f, acc_d ++ interval ++ overlapped}
+        end)
+        |> elem(1)
+        |> then(fn
+          [] ->
+            [{rf, rl, 0}]
+
+          list ->
+            {f, _, _} = list |> List.first()
+
+            before_list =
+              if rf < f do
+                [{rf, f, 0}]
+              else
+                []
+              end
+
+            {_, l, _} = list |> List.last()
+
+            after_list =
+              if l < rl do
+                [{l, rl, 0}]
+              else
+                []
+              end
+
+            before_list ++ list ++ after_list
+        end)
+        |> Enum.map(fn {f, l, offset} -> {f + offset, l + offset} end)
+        |> IO.inspect(label: "Result map #{i}")
+      end)
+    end)
+
+    # maps
+  end)
+
+  # |> Enum.min()
+  # |> List.first()
+end
+
+solution52.(sample52)
+```
+
+```elixir
+solution52.(input52)
 ```
