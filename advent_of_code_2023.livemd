@@ -1804,7 +1804,6 @@ solution41 = fn input ->
         acc
       end
     end)
-    |> IO.inspect()
   end)
   |> Enum.sum()
 end
