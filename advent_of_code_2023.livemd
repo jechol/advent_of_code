@@ -4767,3 +4767,43 @@ solution91.(sample91)
 ```elixir
 solution91.(input91)
 ```
+
+## Day 9 - Part 2
+
+```elixir
+sample92 = sample91
+input92 = input91
+```
+
+```elixir
+solution92 = fn input ->
+  input
+  |> String.split("\n", trim: true)
+  |> Enum.map(fn line ->
+    line |> String.split(" ", trim: true) |> Enum.map(&String.to_integer/1) |> Enum.reverse()
+  end)
+  |> Enum.map(fn nums ->
+    Stream.unfold(nums, fn nums ->
+      if nums |> Enum.all?(fn n -> n == 0 end) do
+        nil
+      else
+        {nums,
+         nums
+         |> Enum.chunk_every(2, 1, :discard)
+         |> Enum.map(fn [a, b] -> b - a end)}
+      end
+    end)
+    |> Enum.reverse()
+    |> Enum.reduce(0, fn nums, acc ->
+      acc + (nums |> List.last())
+    end)
+  end)
+  |> Enum.sum()
+end
+
+solution92.(sample92)
+```
+
+```elixir
+solution92.(input92)
+```
