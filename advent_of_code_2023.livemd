@@ -4478,6 +4478,7 @@ solution82 = fn input ->
   [directions | nodes] = input |> String.split("\n", trim: true)
 
   directions = directions |> String.to_charlist()
+  dir_len = directions |> Enum.count()
 
   nodes =
     nodes
@@ -4489,111 +4490,29 @@ solution82 = fn input ->
 
   start_nodes = nodes |> Map.keys() |> Enum.filter(&String.ends_with?(&1, "A"))
 
-  # find_cycle = fn start ->
-  #   Stream.iterate(0, &(&1 + 1))
-  #   |> Enum.reduce({start, []}, fn i, {start, visited_list} ->
-  #     directions
-  #     |> Enum.reduce({start, []}, fn dir, {cur, visited} ->
-  #       cur = nodes[cur][dir]
-  #       visited = [cur | visited]
-  #       {cur, visited}
-  #     end)
-  #     |> then(fn {cur, visited} -> {cur, visited |> Enum.reverse()} end)
-  #   end)
-  #   |> IO.inspect()
-  #   |> Enum.reduce_while([], fn visited, visited_list -> 
-  #     if visited not in visited_list do
-  #       {:cont, visited_list ++ visited}
-  #     else
-  #       {:halt, visited_list}
-  #     end
-  #   end)
-  #   |> Enum.count()
-  #   |> IO.inspect()
+  find_cycle = fn start ->
+    Stream.iterate(1, &(&1 + 1))
+    |> Enum.reduce_while({start, []}, fn i, {start, exit_loops} ->
+      last =
+        directions
+        |> Enum.reduce(start, fn dir, cur ->
+          nodes[cur][dir]
+        end)
 
-  # end
-
-  # start_nodes |> Enum.map(find_cycle)
-
-  find_cycle = fn start_node ->
-    # dir_count = directions |> Enum.count()
-
-    directions
-    |> Enum.with_index()
-    |> Stream.cycle()
-    |> Enum.reduce_while({start_node, 0, Map.new()}, fn {dir, i}, {cur_node, steps, map} ->
-      # {{dir, i}, {cur_node, steps, set}} |> IO.inspect()
-      steps = steps + 1
-      cur_node = nodes[cur_node][dir]
-      key = {i, dir, cur_node}
-
-      case map |> Map.get(key) do
-        nil ->
-          {:cont, {cur_node, steps, map |> Map.put(key, steps)}}
-
-        prev_steps ->
-          {:halt, {i, steps, prev_steps}}
+      if last |> String.ends_with?("Z") do
+        {:halt, i}
+      else
+        {:cont, {last, exit_loops}}
       end
     end)
   end
 
-  cycles = start_nodes |> Enum.map(find_cycle)
-
-  [start_nodes, cycles]
-  |> Enum.zip()
-  |> Enum.map(fn {start, {_, steps, prev_steps}} ->
-    {_, list} =
-      Stream.cycle(directions)
-      |> Stream.take(steps)
-      |> Stream.with_index(1)
-      |> Enum.reduce({start, []}, fn {dir, i}, {cur, list} ->
-        cur = nodes[cur][dir]
-
-        list =
-          if cur |> String.ends_with?("Z") do
-            [i | list]
-          else
-            list
-          end
-
-        {cur, list}
-      end)
-
-    list = list |> Enum.reverse()
-
-    # {steps, prev_steps, list} |> IO.inspect()
-
-    Stream.iterate(0, &(&1 + 1))
-    |> Stream.flat_map(fn
-      0 -> list
-      n -> list |> Enum.map(fn i -> i + (steps - prev_steps) * n end)
-    end)
-    |> Enum.take(100_000)
-    |> Enum.into(MapSet.new())
+  start_nodes
+  |> Enum.map(find_cycle)
+  |> Enum.reduce(fn n, lcm ->
+    div(n * lcm, Integer.gcd(n, lcm))
   end)
-  |> Enum.reduce(fn set, acc ->
-    MapSet.intersection(set, acc)
-  end)
-  |> IO.inspect()
-
-  # |> Enum.map(fn {_, cycle} -> cycle end)
-  # |> Enum.reduce(1, fn n, lcm ->
-  #   div(n * lcm, Integer.gcd(n, lcm))
-  # end)
-
-  # directions
-  # |> Stream.cycle()
-  # |> Enum.reduce_while({start_nodes, 0}, fn dir, {cur_nodes, steps} ->
-  #   cur_nodes = cur_nodes |> Enum.map(fn n -> nodes[n][dir] end)
-  #   # |> IO.inspect()
-  #   steps = (steps + 1) |> IO.inspect()
-
-  #   if cur_nodes |> Enum.all?(fn n -> String.ends_with?(n, "Z") end) do
-  #     {:halt, steps}
-  #   else
-  #     {:cont, {cur_nodes, steps}}
-  #   end
-  # end)
+  |> Kernel.*(dir_len)
 end
 
 solution82.(sample82)
