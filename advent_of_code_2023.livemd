@@ -4453,3 +4453,85 @@ solution81.(sample812)
 ```elixir
 solution81.(input81)
 ```
+
+## Day 8 - Part 2
+
+```elixir
+sample82 = """
+LR
+
+11A = (11B, XXX)
+11B = (XXX, 11Z)
+11Z = (11B, XXX)
+22A = (22B, XXX)
+22B = (22C, 22C)
+22C = (22Z, 22Z)
+22Z = (22B, 22B)
+XXX = (XXX, XXX)
+"""
+
+input82 = input81
+```
+
+```elixir
+solution82 = fn input ->
+  [directions | nodes] = input |> String.split("\n", trim: true)
+
+  # directions = directions |> String.to_charlist()
+
+  nodes =
+    nodes
+    |> Enum.map(fn line ->
+      [[node], [left], [right]] = Regex.scan(~r/\w{3}/, line)
+      {node, %{?L => left, ?R => right}}
+    end)
+    |> Enum.into(%{})
+
+  # find_cycle = fn start_node ->
+  #   # dir_count = directions |> Enum.count()
+
+  #   directions
+  #   |> Enum.with_index()
+  #   |> Stream.cycle()
+  #   |> Enum.reduce_while({start_node, 0, MapSet.new()}, fn {dir, i}, {cur_node, steps, set} ->
+  #     # {{dir, i}, {cur_node, steps, set}} |> IO.inspect()
+  #     cur_node = nodes[cur_node][dir]
+
+  #     if set |> MapSet.member?({i, dir, cur_node}) do
+  #       {:halt, {i, steps}}
+  #     else
+  #       {:cont, {cur_node, steps + 1, set |> MapSet.put({i, dir, cur_node})}}
+  #     end
+  #   end)
+  # end
+
+  start_nodes = nodes |> Map.keys() |> Enum.filter(&String.ends_with?(&1, "A"))
+
+  # cycles = start_nodes |> Enum.map(find_cycle) 
+  # |> Enum.map(fn {_, cycle} -> cycle end)
+  # |> Enum.reduce(1, fn n, lcm ->
+  #   div(n * lcm, Integer.gcd(n, lcm))
+  # end)
+
+  directions
+  |> String.to_charlist()
+  |> Stream.cycle()
+  |> Enum.reduce_while({start_nodes, 0}, fn dir, {cur_nodes, steps} ->
+    cur_nodes = cur_nodes |> Enum.map(fn n -> nodes[n][dir] end)
+    # |> IO.inspect()
+    steps = (steps + 1) |> IO.inspect()
+
+    if cur_nodes |> Enum.all?(fn n -> String.ends_with?(n, "Z") end) do
+      {:halt, steps}
+    else
+      {:cont, {cur_nodes, steps}}
+    end
+  end)
+end
+
+solution82.(sample82)
+```
+
+```elixir
+solution82.(input82)
+```
