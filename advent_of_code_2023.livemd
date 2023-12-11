@@ -2379,7 +2379,7 @@ solution61 = fn input ->
   end)
   |> Enum.zip()
   |> Enum.map(fn {time, distance} ->
-    1..(time - 1)//1
+    0..time
     |> Enum.filter(fn speed ->
       speed * (time - speed) > distance
     end)
@@ -2393,4 +2393,53 @@ solution61.(sample61)
 
 ```elixir
 solution61.(input61)
+```
+
+```elixir
+sample62 = sample61
+input62 = input61
+```
+
+```elixir
+solution62 = fn input ->
+  [time, distance] =
+    input
+    |> String.split("\n", trim: true)
+    |> Enum.map(fn line ->
+      line
+      |> String.split(":")
+      |> List.last()
+      |> then(fn line -> Regex.scan(~r/\d+/, line) end)
+      |> List.flatten()
+      |> Enum.join()
+      |> String.to_integer()
+    end)
+
+  win? = fn t -> t * (time - t) > distance end
+
+  find_boundary = fn {a, b}, find_boundary ->
+    if a + 1 == b do
+      {a, b}
+    else
+      half = div(a + b, 2)
+
+      if win?.(half) == win?.(b) do
+        find_boundary.({a, half}, find_boundary)
+      else
+        find_boundary.({half, b}, find_boundary)
+      end
+    end
+  end
+
+  {_, min} = find_boundary.({0, div(time, 2)}, find_boundary)
+  {max, _} = find_boundary.({div(time, 2), time}, find_boundary)
+
+  max - min + 1
+end
+
+solution62.(sample62)
+```
+
+```elixir
+solution62.(input62)
 ```
