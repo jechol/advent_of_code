@@ -3514,6 +3514,8 @@ solution71.(sample71)
 solution71.(input71)
 ```
 
+## Day 7 - Part 2
+
 ```elixir
 sample72 = sample71
 input72 = input71
@@ -3586,3 +3588,5 @@ solution72.(sample72)
 ```elixir
 solution72.(input72)
 ```
+
+## Day 8 - Part 1
