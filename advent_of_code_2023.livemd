@@ -2286,29 +2286,19 @@ solution52 = fn input ->
   |> Enum.map(fn [s] -> String.to_integer(s) end)
   |> Enum.chunk_every(2, 2, :discard)
   |> Enum.map(fn [first, length] -> {first, first + length} end)
-  |> Enum.take(1)
   |> Enum.flat_map(fn seed ->
     maps
-    # |> Enum.take(2)
-    |> Enum.with_index()
-    |> Enum.reduce([seed], fn {map, i}, ranges ->
+    |> Enum.reduce([seed], fn map, ranges ->
       ranges
-      |> IO.inspect(label: "Before map #{i}")
       |> Enum.flat_map(fn {rf, rl} = _range ->
-        # {rf, rl} |> IO.inspect(label: "rf, rl")
         map
-        # |> IO.inspect(label: "map entry")
-        |> Enum.with_index()
-        |> Enum.reduce({rf, []}, fn {{sf, sl, offset}, i}, {acc_f, acc_d} = _acc ->
-          {{{sf, sl, offset}, i}, {acc_f, acc_d}} |> IO.inspect(label: "reducing...")
-
+        |> Enum.reduce({rf, []}, fn {sf, sl, offset}, {acc_f, acc_d} ->
           interval =
             if acc_f < sf and sf <= rl do
               [{acc_f, sf, 0}]
             else
               []
             end
-            |> IO.inspect(label: "interval")
 
           f = max(sf, acc_f)
           l = min(sl, rl)
@@ -2319,7 +2309,6 @@ solution52 = fn input ->
             else
               {acc_f, []}
             end
-            |> IO.inspect(label: "overlap")
 
           {acc_f, acc_d ++ interval ++ overlapped}
         end)
@@ -2350,15 +2339,11 @@ solution52 = fn input ->
             before_list ++ list ++ after_list
         end)
         |> Enum.map(fn {f, l, offset} -> {f + offset, l + offset} end)
-        |> IO.inspect(label: "Result map #{i}")
       end)
     end)
-
-    # maps
   end)
-
-  # |> Enum.min()
-  # |> List.first()
+  |> Enum.min()
+  |> elem(0)
 end
 
 solution52.(sample52)
