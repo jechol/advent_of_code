@@ -2351,3 +2351,46 @@ solution52.(sample52)
 ```elixir
 solution52.(input52)
 ```
+
+## Day 6 - Part 1
+
+```elixir
+sample61 = """
+Time:      7  15   30
+Distance:  9  40  200
+"""
+
+input61 = """
+Time:        45     98     83     73
+Distance:   295   1734   1278   1210
+"""
+```
+
+```elixir
+solution61 = fn input ->
+  input
+  |> String.split("\n", trim: true)
+  |> Enum.map(fn line ->
+    line
+    |> String.split(":")
+    |> List.last()
+    |> then(fn line -> Regex.scan(~r/\d+/, line) end)
+    |> Enum.map(fn [s] -> s |> String.to_integer() end)
+  end)
+  |> Enum.zip()
+  |> Enum.map(fn {time, distance} ->
+    1..(time - 1)//1
+    |> Enum.filter(fn speed ->
+      speed * (time - speed) > distance
+    end)
+    |> Enum.count()
+  end)
+  |> Enum.reduce(1, &Kernel.*/2)
+end
+
+solution61.(sample61)
+```
+
+```elixir
+solution61.(input61)
+```
