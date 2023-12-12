@@ -3,14 +3,14 @@
 ## Day 1 - Part 1
 
 ```elixir
-sample11 = """
+sample01_1 = """
 1abc2
 pqr3stu8vwx
 a1b2c3d4e5f
 treb7uchet
 """
 
-input11 = """
+input01_1 = """
 jjfvnnlfivejj1
 6fourfour
 ninevbmltwo69
@@ -1015,7 +1015,7 @@ hmbfjdfnp989mfivefiverpzrjs
 ```
 
 ```elixir
-solution11 = fn input ->
+solution01_1 = fn input ->
   input
   |> String.split()
   |> Enum.map(fn line ->
@@ -1030,17 +1030,17 @@ solution11 = fn input ->
   |> Enum.sum()
 end
 
-solution11.(sample11)
+solution01_1.(sample01_1)
 ```
 
 ```elixir
-solution11.(input11)
+solution01_1.(input01_1)
 ```
 
 ## Day 1 - Part 2
 
 ```elixir
-sample12 = """
+sample01_2 = """
 two1nine
 eightwothree
 abcone2threexyz
@@ -1050,11 +1050,11 @@ zoneight234
 7pqrstsixteen
 """
 
-input12 = input11
+input01_2 = input01_1
 ```
 
 ```elixir
-solution12 = fn input ->
+solution01_2 = fn input ->
   digits =
     ~w(zero one two three four five six seven eight nine 0 1 2 3 4 5 6 7 8 9)
     |> Enum.with_index()
@@ -1086,17 +1086,17 @@ solution12 = fn input ->
   |> Enum.sum()
 end
 
-solution12.(sample12)
+solution01_2.(sample01_2)
 ```
 
 ```elixir
-solution12.(input12)
+solution01_2.(input01_2)
 ```
 
 ## Day 2 - Part 1
 
 ```elixir
-sample21 = """
+sample02_1 = """
 Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
 Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue
 Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red
@@ -1104,7 +1104,7 @@ Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
 Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green
 """
 
-input21 = """
+input02_1 = """
 Game 1: 2 green, 6 blue, 7 red; 12 green, 6 blue, 3 red; 5 red, 18 green, 4 blue
 Game 2: 10 green, 4 red; 2 red; 12 green, 11 red, 1 blue; 1 blue, 11 red, 5 green; 10 red, 9 green, 1 blue
 Game 3: 3 green; 15 red, 7 blue, 1 green; 3 red, 6 blue, 1 green; 14 blue, 13 red, 2 green; 1 green, 6 blue, 6 red; 16 red, 13 blue, 2 green
@@ -1209,7 +1209,7 @@ Game 100: 13 red, 2 green; 15 red, 1 green; 4 green, 1 blue; 11 red, 5 green; 3 
 ```
 
 ```elixir
-solution21 = fn input ->
+solution02_1 = fn input ->
   input
   |> String.split("\n", trim: true)
   |> Enum.map(fn line ->
@@ -1240,17 +1240,17 @@ solution21 = fn input ->
   |> Enum.sum()
 end
 
-solution21.(sample21)
+solution02_1.(sample02_1)
 ```
 
 ```elixir
-solution21.(input21)
+solution02_1.(input02_1)
 ```
 
 ## Day 2 - Part 2
 
 ```elixir
-sample22 = """
+sample02_2 = """
 Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
 Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue
 Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red
@@ -1258,11 +1258,11 @@ Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
 Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green
 """
 
-input22 = input21
+input02_2 = input02_1
 ```
 
 ```elixir
-solution22 = fn input ->
+solution02_2 = fn input ->
   input
   |> String.split("\n", trim: true)
   |> Enum.map(fn line ->
@@ -1288,17 +1288,17 @@ solution22 = fn input ->
   |> Enum.sum()
 end
 
-solution22.(sample22)
+solution02_2.(sample02_2)
 ```
 
 ```elixir
-solution22.(input22)
+solution02_2.(input02_2)
 ```
 
 ## Day 3 - Part 1
 
 ```elixir
-sample31 = """
+sample03_1 = """
 467..114..
 ...*......
 ..35..633.
@@ -1311,7 +1311,7 @@ sample31 = """
 .664.598..
 """
 
-input31 = """
+input03_1 = """
 .........................3.......................................94...............806....................596.........793...........186......
 .../..........*574.587..*........161......904.......412.........*.................*.................................=.....637.%......*......
 ..614..831..33.....*...........@....*398..&.....690*............183.........503..916..790................................*.....256....632...
@@ -1456,7 +1456,7 @@ input31 = """
 ```
 
 ```elixir
-solution31 = fn input ->
+solution03_1 = fn input ->
   lines = input |> String.split("\n", trim: true)
   w = lines |> Enum.at(0) |> String.length()
   h = lines |> Enum.count()
@@ -1490,17 +1490,17 @@ solution31 = fn input ->
   |> Enum.sum()
 end
 
-solution31.(sample31)
+solution03_1.(sample03_1)
 ```
 
 ```elixir
-solution31.(input31)
+solution03_1.(input03_1)
 ```
 
 ## Day 3 - Part 2
 
 ```elixir
-sample32 = """
+sample03_2 = """
 467..114..
 ...*......
 ..35..633.
@@ -1513,11 +1513,11 @@ sample32 = """
 .664.598..
 """
 
-input32 = input31
+input03_2 = input03_1
 ```
 
 ```elixir
-solution32 = fn input ->
+solution03_2 = fn input ->
   lines = input |> String.split("\n", trim: true)
   w = lines |> Enum.at(0) |> String.length()
   h = lines |> Enum.count()
@@ -1557,17 +1557,17 @@ solution32 = fn input ->
   |> Enum.sum()
 end
 
-solution32.(sample32)
+solution03_2.(sample03_2)
 ```
 
 ```elixir
-solution32.(input32)
+solution03_2.(input03_2)
 ```
 
 ## Day 4 - Part 1
 
 ```elixir
-sample41 = """
+sample04_1 = """
 Card 1: 41 48 83 86 17 | 83 86  6 31 17  9 48 53
 Card 2: 13 32 20 16 61 | 61 30 68 82 17 32 24 19
 Card 3:  1 21 53 59 44 | 69 82 63 72 16 21 14  1
@@ -1576,7 +1576,7 @@ Card 5: 87 83 26 28 32 | 88 30 70 12 93 22 82 36
 Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11
 """
 
-input41 = """
+input04_1 = """
 Card   1: 24 76 32 40 51 61 89  6 30 60 | 30 69 24 86  6  8 92 61 51 88 63 67 32 62 15 49 22 77 40 27 89 60 76 58 79
 Card   2: 97  3 51 52 79  8 89 76 10 59 | 59 48 52 76 97 16 92 81 62 25 89 51 54  3 79 18 94 78  8 32 99 66 10 70 38
 Card   3:  8 67 56 82 96  2 21 47 41 38 |  6 83 17 36  8 21 82 27 68 67  7 38 56 42 66  3 47 87 41 71 88 96  2 98 72
@@ -1778,7 +1778,7 @@ Card 197: 67 21 75 10  9  6 47 88 45 70 | 91 95 58 82 52 50 87 81 78 13 64 53 57
 ```
 
 ```elixir
-solution41 = fn input ->
+solution04_1 = fn input ->
   input
   |> String.split("\n", trim: true)
   |> Enum.map(fn line ->
@@ -1808,22 +1808,22 @@ solution41 = fn input ->
   |> Enum.sum()
 end
 
-solution41.(sample41)
+solution04_1.(sample04_1)
 ```
 
 ```elixir
-solution41.(input41)
+solution04_1.(input04_1)
 ```
 
 ## Day 4 - Part 2
 
 ```elixir
-sample42 = sample41
-input42 = input41
+sample04_2 = sample04_1
+input04_2 = input04_1
 ```
 
 ```elixir
-solution42 = fn input ->
+solution04_2 = fn input ->
   [[win, _] | _] =
     cards =
     input
@@ -1867,17 +1867,17 @@ solution42 = fn input ->
   |> Enum.sum()
 end
 
-solution42.(sample42)
+solution04_2.(sample04_2)
 ```
 
 ```elixir
-solution42.(input42)
+solution04_2.(input04_2)
 ```
 
 ## Day 5 - Part 1
 
 ```elixir
-sample51 = """
+sample05_1 = """
 seeds: 79 14 55 13
 
 seed-to-soil map:
@@ -1912,7 +1912,7 @@ humidity-to-location map:
 60 56 37
 """
 
-input51 = """
+input05_1 = """
 seeds: 768975 36881621 56868281 55386784 1828225758 1084205557 2956956868 127170752 1117192172 332560644 357791695 129980646 819363529 9145257 993170544 70644734 3213715789 312116873 3107544690 59359615
 
 seed-to-soil map:
@@ -2196,7 +2196,7 @@ humidity-to-location map:
 ```
 
 ```elixir
-solution51 = fn input ->
+solution05_1 = fn input ->
   lines = input |> String.split("\n", trim: true)
 
   maps =
@@ -2239,22 +2239,22 @@ solution51 = fn input ->
   |> Enum.min()
 end
 
-solution51.(sample51)
+solution05_1.(sample05_1)
 ```
 
 ```elixir
-solution51.(input51)
+solution05_1.(input05_1)
 ```
 
 ## Day 5 - Part 2
 
 ```elixir
-sample52 = sample51
-input52 = input51
+sample05_2 = sample05_1
+input05_2 = input05_1
 ```
 
 ```elixir
-solution52 = fn input ->
+solution05_2 = fn input ->
   lines = input |> String.split("\n", trim: true)
 
   maps =
@@ -2345,29 +2345,29 @@ solution52 = fn input ->
   |> elem(0)
 end
 
-solution52.(sample52)
+solution05_2.(sample05_2)
 ```
 
 ```elixir
-solution52.(input52)
+solution05_2.(input05_2)
 ```
 
 ## Day 6 - Part 1
 
 ```elixir
-sample61 = """
+sample06_1 = """
 Time:      7  15   30
 Distance:  9  40  200
 """
 
-input61 = """
+input06_1 = """
 Time:        45     98     83     73
 Distance:   295   1734   1278   1210
 """
 ```
 
 ```elixir
-solution61 = fn input ->
+solution06_1 = fn input ->
   input
   |> String.split("\n", trim: true)
   |> Enum.map(fn line ->
@@ -2388,20 +2388,20 @@ solution61 = fn input ->
   |> Enum.reduce(1, &Kernel.*/2)
 end
 
-solution61.(sample61)
+solution06_1.(sample06_1)
 ```
 
 ```elixir
-solution61.(input61)
+solution06_1.(input06_1)
 ```
 
 ```elixir
-sample62 = sample61
-input62 = input61
+sample06_2 = sample06_1
+input06_2 = input06_1
 ```
 
 ```elixir
-solution62 = fn input ->
+solution06_2 = fn input ->
   [time, distance] =
     input
     |> String.split("\n", trim: true)
@@ -2437,17 +2437,17 @@ solution62 = fn input ->
   max - min + 1
 end
 
-solution62.(sample62)
+solution06_2.(sample06_2)
 ```
 
 ```elixir
-solution62.(input62)
+solution06_2.(input06_2)
 ```
 
 ## Day 7 - Part 1
 
 ```elixir
-sample71 = """
+sample07_1 = """
 32T3K 765
 T55J5 684
 KK677 28
@@ -2455,7 +2455,7 @@ KTJJT 220
 QQQJA 483
 """
 
-input71 = """
+input07_1 = """
 94J8A 16
 JK59A 722
 Q5QQQ 681
@@ -3460,7 +3460,7 @@ JJTTT 774
 ```
 
 ```elixir
-solution71 = fn input ->
+solution07_1 = fn input ->
   calc_type = fn hand ->
     hand
     |> Enum.frequencies()
@@ -3507,22 +3507,22 @@ solution71 = fn input ->
   |> Enum.sum()
 end
 
-solution71.(sample71)
+solution07_1.(sample07_1)
 ```
 
 ```elixir
-solution71.(input71)
+solution07_1.(input07_1)
 ```
 
 ## Day 7 - Part 2
 
 ```elixir
-sample72 = sample71
-input72 = input71
+sample07_2 = sample07_1
+input07_2 = input07_1
 ```
 
 ```elixir
-solution72 = fn input ->
+solution07_2 = fn input ->
   joker_number = 1
 
   calc_type = fn hand ->
@@ -3582,17 +3582,17 @@ solution72 = fn input ->
   |> Enum.sum()
 end
 
-solution72.(sample72)
+solution07_2.(sample07_2)
 ```
 
 ```elixir
-solution72.(input72)
+solution07_2.(input07_2)
 ```
 
 ## Day 8 - Part 1
 
 ```elixir
-sample811 = """
+sample81_1 = """
 RL
 
 AAA = (BBB, CCC)
@@ -3604,7 +3604,7 @@ GGG = (GGG, GGG)
 ZZZ = (ZZZ, ZZZ)
 """
 
-sample812 = """
+sample81_2 = """
 LLR
 
 AAA = (BBB, BBB)
@@ -3612,7 +3612,7 @@ BBB = (AAA, ZZZ)
 ZZZ = (ZZZ, ZZZ)
 """
 
-input81 = """
+input08_1 = """
 LRLLRRRLRRLRRRLRLRRLLRRLRRLRRLRRRLLRRLRRLLLRRLLRRRLRRRLRRRLRLRRRLRRRLRLRLRRLRLRRRLRLRLRRRLLRRRLRLRRLLLRRRLLRRLLLRRRLRRLLRLRLRRRLRRLLRRLRRRLRRRLLRRRLLRRRLRRLRRLRLRRRLLLRRRLRRRLRLRRLRRLRRLRRLRRLRRRLRRRLRRLLRRLRRRLRLLRLLRRLLRRLRRRLRRRLRRRLRRRLRRLRRRLLRRLRRRLRRLRRRLRRLRRLRRLRRLRRLRLRRRR
 
 QRX = (XNN, TCJ)
@@ -4417,7 +4417,7 @@ FJC = (HHR, LFH)
 ```
 
 ```elixir
-solution81 = fn input ->
+solution08_1 = fn input ->
   [directions | nodes] = input |> String.split("\n", trim: true)
 
   nodes =
@@ -4443,21 +4443,21 @@ solution81 = fn input ->
   end)
 end
 
-solution81.(sample811)
+solution08_1.(sample81_1)
 ```
 
 ```elixir
-solution81.(sample812)
+solution08_1.(sample81_2)
 ```
 
 ```elixir
-solution81.(input81)
+solution08_1.(input08_1)
 ```
 
 ## Day 8 - Part 2
 
 ```elixir
-sample82 = """
+sample08_2 = """
 LR
 
 11A = (11B, XXX)
@@ -4470,11 +4470,11 @@ LR
 XXX = (XXX, XXX)
 """
 
-input82 = input81
+input08_2 = input08_1
 ```
 
 ```elixir
-solution82 = fn input ->
+solution08_2 = fn input ->
   [directions | nodes] = input |> String.split("\n", trim: true)
 
   directions = directions |> String.to_charlist()
@@ -4515,23 +4515,23 @@ solution82 = fn input ->
   |> Kernel.*(dir_len)
 end
 
-solution82.(sample82)
+solution08_2.(sample08_2)
 ```
 
 ```elixir
-solution82.(input82)
+solution08_2.(input08_2)
 ```
 
 ## Day 9 - Part 1
 
 ```elixir
-sample91 = """
+sample09_1 = """
 0 3 6 9 12 15
 1 3 6 10 15 21
 10 13 16 21 30 45
 """
 
-input91 = """
+input09_1 = """
 8 10 9 -2 -17 8 190 771 2208 5345 11753 24409 49063 97014 190779 375658 743112 1477240 2945141 5868120 11637263
 -9 -16 -26 -42 -67 -89 -41 278 1345 4163 10710 24787 53710 111805 227699 459451 925644 1868703 3782952 7672020 15562542
 28 51 96 170 284 469 798 1415 2573 4692 8485 15300 28049 53554 108059 229471 503402 1116673 2463878 5353430 11394522
@@ -4736,7 +4736,7 @@ input91 = """
 ```
 
 ```elixir
-solution91 = fn input ->
+solution09_1 = fn input ->
   input
   |> String.split("\n", trim: true)
   |> Enum.map(fn line ->
@@ -4761,22 +4761,22 @@ solution91 = fn input ->
   |> Enum.sum()
 end
 
-solution91.(sample91)
+solution09_1.(sample09_1)
 ```
 
 ```elixir
-solution91.(input91)
+solution09_1.(input09_1)
 ```
 
 ## Day 9 - Part 2
 
 ```elixir
-sample92 = sample91
-input92 = input91
+sample09_2 = sample09_1
+input09_2 = input09_1
 ```
 
 ```elixir
-solution92 = fn input ->
+solution09_2 = fn input ->
   input
   |> String.split("\n", trim: true)
   |> Enum.map(fn line ->
@@ -4801,17 +4801,17 @@ solution92 = fn input ->
   |> Enum.sum()
 end
 
-solution92.(sample92)
+solution09_2.(sample09_2)
 ```
 
 ```elixir
-solution92.(input92)
+solution09_2.(input09_2)
 ```
 
 ## Day 10 - Part 1
 
 ```elixir
-sample101 = """
+sample10_1 = """
 ..F7.
 .FJ|.
 SJ.L7
@@ -4819,7 +4819,7 @@ SJ.L7
 LJ...
 """
 
-input101 = """
+input10_1 = """
 FJ7.FF--|--|-|J.FL7FL7LJ7F7-F.-7.FF7F|F-JJ-F----JF77.-JJFJ--|7FF7L-7.--LF.FJ-FL7JFF-77|F----F-|-F77LJ---F-L-L-77-.FJ.F77FJF7.LFJ7-|.FF-7--7.
 7.L--7|.|.||F7L7J.L7L7LLF-JFJ7JL-JL77L7|||.J-JF|LFFJ-JJFLJ..7-7-J7|.FL-|LF||.----L.|JF|7JL-L-7|7.L-.F-7---J-L-J|LLJ.-F--|LFL7-F.J7L|J.F|J||7
 L.|L|L--.7J||JF777-J-7JF7LFJJ|-J-|-|7F-7F7-|J7L|-FF..L7L|.F7L7.FL7JFL7-|--F-7LF.FJ.7.LJ-F--F|F7--.L77.|-LF7.|-L||FF7.7FLF7.L|-7-F7||.--|--LJ
@@ -4964,7 +4964,7 @@ J-.F7J-J|L-|-FJ-F--7LLJ-J-.F7|F--JJFJF|L-L7F7.|.L-FJ|LL-7F|LF7.-JLL.7.||.|J|F--|
 ```
 
 ```elixir
-solution101 = fn input ->
+solution10_1 = fn input ->
   map = input |> String.split("\n", trim: true) |> Enum.map(&String.to_charlist/1)
   h = map |> Enum.count()
   w = map |> Enum.at(0) |> Enum.count()
@@ -5020,17 +5020,17 @@ solution101 = fn input ->
   div(Enum.count(cycle) - 1, 2) + 1
 end
 
-solution101.(sample101)
+solution10_1.(sample10_1)
 ```
 
 ```elixir
-solution101.(input101)
+solution10_1.(input10_1)
 ```
 
 ## Day 10 - Part 2
 
 ```elixir
-sample102_1 = """
+sample10_2_1 = """
 ...........
 .S-------7.
 .|F-----7|.
@@ -5042,7 +5042,7 @@ sample102_1 = """
 ...........
 """
 
-sample102_2 = """
+sample10_2_2 = """
 .F----7F7F7F7F-7....
 .|F--7||||||||FJ....
 .||.FJ||||||||L7....
@@ -5055,7 +5055,7 @@ L--J.L7...LJS7F-7L7.
 ....L---J.LJ.LJLJ...
 """
 
-sample102_3 = """
+sample10_2_3 = """
 FF7FSF7F7F7F7F7F---7
 L|LJ||||||||||||F--J
 FL-7LJLJ||||||LJL-77
@@ -5068,11 +5068,11 @@ L.L7LFJ|||||FJL7||LJ
 L7JLJL-JLJLJL--JLJ.L
 """
 
-input102 = input101
+input10_2 = input10_1
 ```
 
 ```elixir
-solution102 = fn input ->
+solution10_2 = fn input ->
   map = input |> String.split("\n", trim: true) |> Enum.map(&String.to_charlist/1)
   h = map |> Enum.count()
   w = map |> Enum.at(0) |> Enum.count()
@@ -5223,25 +5223,25 @@ solution102 = fn input ->
   |> Enum.sum()
 end
 
-solution102.(sample102_1)
+solution10_2.(sample10_2_1)
 ```
 
 ```elixir
-solution102.(sample102_2)
+solution10_2.(sample10_2_2)
 ```
 
 ```elixir
-solution102.(sample102_3)
+solution10_2.(sample10_2_3)
 ```
 
 ```elixir
-solution102.(input102)
+solution10_2.(input10_2)
 ```
 
 ## Day 11 - Part 1
 
 ```elixir
-sample111 = """
+sample11_1 = """
 ...#......
 .......#..
 #.........
@@ -5254,7 +5254,7 @@ sample111 = """
 #...#.....
 """
 
-input111 = """
+input11_1 = """
 ........................#...............................................#................................#................................#.
 ....#..............#......................#............#....................................................................#...............
 ................................#.............................................................#.............................................
@@ -5399,7 +5399,7 @@ input111 = """
 ```
 
 ```elixir
-solution111 = fn input, expand_multiplier ->
+solution11_1 = fn input, expand_multiplier ->
   map =
     input
     |> String.split("\n", trim: true)
@@ -5471,26 +5471,26 @@ solution111 = fn input, expand_multiplier ->
   |> Enum.sum()
 end
 
-solution111.(sample111, 2)
+solution11_1.(sample11_1, 2)
 ```
 
 ```elixir
-solution111.(input111, 2)
+solution11_1.(input11_1, 2)
 ```
 
 ## Day 11 - Part 2
 
 ```elixir
-sample112 = sample111
-input112 = input111
+sample11_2 = sample11_1
+input11_2 = input11_1
 ```
 
 ```elixir
-solution112 = solution111
+solution11_2 = solution11_1
 
-solution112.(sample112, 1000_000)
+solution11_2.(sample11_2, 1000_000)
 ```
 
 ```elixir
-solution112.(input112, 1000_000)
+solution11_2.(input11_2, 1000_000)
 ```
