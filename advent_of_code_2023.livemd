@@ -5412,8 +5412,6 @@ solution111 = fn input, expand_multiplier ->
       end)
     end)
 
-  # |> IO.inspect(label: "before")
-
   expand = fn line ->
     if line |> Enum.all?(fn v -> v != "#" end) do
       line |> Enum.map(fn _v -> expand_multiplier end)
@@ -5423,7 +5421,6 @@ solution111 = fn input, expand_multiplier ->
   end
 
   map = map |> Enum.map(expand)
-  # |> IO.inspect(label: "vertical")
 
   map =
     map
@@ -5432,8 +5429,6 @@ solution111 = fn input, expand_multiplier ->
     |> Enum.map(expand)
     |> Enum.zip()
     |> Enum.map(&Tuple.to_list/1)
-
-  # |> IO.inspect(label: "horizontal")
 
   gals =
     map
@@ -5456,11 +5451,9 @@ solution111 = fn input, expand_multiplier ->
         dist when is_integer(dist) -> dist
       end)
     end)
-    |> IO.inspect()
 
   dist = fn from, to, dist ->
     dist |> Stream.drop(from) |> Stream.take(to - from) |> Enum.sum()
-    # from..(to-1)//1 |> Enum.map(fn i -> dist |> Enum.at(i) end) |> Enum.sum()
   end
 
   gals
@@ -5485,6 +5478,19 @@ solution111.(sample111, 2)
 solution111.(input111, 2)
 ```
 
-```elixir
+## Day 11 - Part 2
 
+```elixir
+sample112 = sample111
+input112 = input111
+```
+
+```elixir
+solution112 = solution111
+
+solution112.(sample112, 1000_000)
+```
+
+```elixir
+solution112.(input112, 1000_000)
 ```
