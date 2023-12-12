@@ -5219,7 +5219,7 @@ solution102 = fn input ->
       end
     end)
   end)
-  |> List.flatten()
+  |> Enum.map(&Enum.sum/1)
   |> Enum.sum()
 end
 
@@ -5237,3 +5237,5 @@ solution102.(sample102_3)
 ```elixir
 solution102.(input102)
 ```
+
+## Day 11 - Part 1
