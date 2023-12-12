@@ -5003,20 +5003,20 @@ solution101 = fn input ->
     neighbor.(cur) |> Enum.filter(fn p -> p != last end) |> List.first()
   end
 
-  sy = map |> Enum.find_index(fn line -> ?S in line end)
-  sx = map |> Enum.at(sy) |> Enum.find_index(fn c -> c == ?S end)
-  sp = {sx, sy}
+  fy = map |> Enum.find_index(fn line -> ?S in line end)
+  fx = map |> Enum.at(fy) |> Enum.find_index(fn c -> c == ?S end)
+  first = {fx, fy}
 
-  begin = neighbor.(sp) |> Enum.filter(fn n -> sp in neighbor.(n) end) |> List.first()
+  second = neighbor.(first) |> Enum.filter(fn n -> first in neighbor.(n) end) |> List.first()
 
   find_cycle = fn [cur, last | _] = path, find_cycle ->
     case next.(last, cur) do
-      ^sp -> path |> Enum.reverse()
+      ^first -> path |> Enum.reverse()
       p -> find_cycle.([p | path], find_cycle)
     end
   end
 
-  cycle = find_cycle.([begin, sp], find_cycle)
+  [^first, ^second | _] = cycle = find_cycle.([second, first], find_cycle)
   div(Enum.count(cycle) - 1, 2) + 1
 end
 
@@ -5027,6 +5027,377 @@ solution101.(sample101)
 solution101.(input101)
 ```
 
-```elixir
+## Day 10 - Part 2
 
+```elixir
+sample102_1 = """
+...........
+.S-------7.
+.|F-----7|.
+.||.....||.
+.||.....||.
+.|L-7.F-J|.
+.|..|.|..|.
+.L--J.L--J.
+...........
+"""
+
+sample102_2 = """
+.F----7F7F7F7F-7....
+.|F--7||||||||FJ....
+.||.FJ||||||||L7....
+FJL7L7LJLJ||LJ.L-7..
+L--J.L7...LJS7F-7L7.
+....F-J..F7FJ|L7L7L7
+....L7.F7||L7|.L7L7|
+.....|FJLJ|FJ|F7|.LJ
+....FJL-7.||.||||...
+....L---J.LJ.LJLJ...
+"""
+
+sample102_3 = """
+FF7FSF7F7F7F7F7F---7
+L|LJ||||||||||||F--J
+FL-7LJLJ||||||LJL-77
+F--JF--7||LJLJ7F7FJ-
+L---JF-JLJ.||-FJLJJ7
+|F|F-JF---7F7-L7L|7|
+|FFJF7L7F-JF7|JL---7
+7-L-JL7||F7|L7F-7F7|
+L.L7LFJ|||||FJL7||LJ
+L7JLJL-JLJLJL--JLJ.L
+"""
+
+input102 = input101
+```
+
+```elixir
+solution102 = fn input ->
+  map = input |> String.split("\n", trim: true) |> Enum.map(&String.to_charlist/1)
+  h = map |> Enum.count()
+  w = map |> Enum.at(0) |> Enum.count()
+
+  outside? = fn {x, y} -> x < 0 or x >= w or y < 0 or y >= h end
+
+  get = fn {x, y} = p ->
+    if outside?.(p) do
+      ?.
+    else
+      map |> Enum.at(y) |> Enum.at(x)
+    end
+  end
+
+  neighbor = fn {x, y} = p ->
+    n = {x, y - 1}
+    s = {x, y + 1}
+    w = {x - 1, y}
+    e = {x + 1, y}
+
+    get.(p)
+    |> case do
+      ?| -> [n, s]
+      ?- -> [e, w]
+      ?L -> [n, e]
+      ?J -> [n, w]
+      ?7 -> [s, w]
+      ?F -> [s, e]
+      ?. -> []
+      ?S -> [n, s, w, e]
+    end
+    |> Enum.filter(fn p -> not outside?.(p) end)
+  end
+
+  next = fn last, cur ->
+    neighbor.(cur) |> Enum.filter(fn p -> p != last end) |> List.first()
+  end
+
+  fy = map |> Enum.find_index(fn line -> ?S in line end)
+  fx = map |> Enum.at(fy) |> Enum.find_index(fn c -> c == ?S end)
+  first = {fx, fy}
+
+  second = neighbor.(first) |> Enum.filter(fn n -> first in neighbor.(n) end) |> List.first()
+
+  find_cycle = fn [cur, last | _] = path, find_cycle ->
+    case next.(last, cur) do
+      ^first -> path |> Enum.reverse()
+      p -> find_cycle.([p | path], find_cycle)
+    end
+  end
+
+  [^first, ^second | _] = cycle = find_cycle.([second, first], find_cycle)
+  last = cycle |> List.last()
+
+  find_dir = fn
+    {x, y}, {bx, y} ->
+      cond do
+        x == bx - 1 -> :w
+        x == bx + 1 -> :e
+      end
+
+    {x, y}, {x, by} ->
+      cond do
+        y == by - 1 -> :n
+        y == by + 1 -> :s
+      end
+  end
+
+  first_type =
+    [last, second]
+    |> Enum.map(fn p -> find_dir.(p, first) end)
+    |> Enum.sort()
+    |> case do
+      [:e, :n] -> ?L
+      [:e, :s] -> ?F
+      [:e, :w] -> ?-
+      [:n, :s] -> ?|
+      [:n, :w] -> ?J
+      [:s, :w] -> ?7
+    end
+
+  get_border_type = fn p ->
+    cond do
+      p == first -> first_type
+      p in cycle -> get.(p)
+      true -> nil
+    end
+  end
+
+  horizontal =
+    0..(h - 1)
+    |> Enum.map(fn y ->
+      1..(w - 1)
+      |> Enum.reduce({[false], nil}, fn x, {[last_scan | _] = scan, bend} ->
+        last_border_type = get_border_type.({x - 1, y})
+
+        case {last_scan, bend, last_border_type} do
+          {_, _, ?|} -> {[not last_scan | scan], bend}
+          {_, _, ?-} -> {[last_scan | scan], bend}
+          {_, nil, type} when type in [?L, ?F] -> {[last_scan | scan], type}
+          {_, nil, nil} -> {[last_scan | scan], nil}
+          {_, ?L, ?J} -> {[last_scan | scan], nil}
+          {_, ?L, ?7} -> {[not last_scan | scan], nil}
+          {_, ?F, ?7} -> {[last_scan | scan], nil}
+          {_, ?F, ?J} -> {[not last_scan | scan], nil}
+        end
+      end)
+      |> then(fn {scan, _} -> scan |> Enum.reverse() end)
+    end)
+
+  vertical =
+    0..(w - 1)
+    |> Enum.map(fn x ->
+      1..(h - 1)
+      |> Enum.reduce({[false], nil}, fn y, {[last_scan | _] = scan, bend} ->
+        last_border_type = get_border_type.({x, y - 1})
+
+        case {last_scan, bend, last_border_type} do
+          {_, _, ?-} -> {[not last_scan | scan], bend}
+          {_, _, ?|} -> {[last_scan | scan], bend}
+          {_, nil, type} when type in [?F, ?7] -> {[last_scan | scan], type}
+          {_, nil, nil} -> {[last_scan | scan], nil}
+          {_, ?F, ?L} -> {[last_scan | scan], nil}
+          {_, ?F, ?J} -> {[not last_scan | scan], nil}
+          {_, ?7, ?J} -> {[last_scan | scan], nil}
+          {_, ?7, ?L} -> {[not last_scan | scan], nil}
+        end
+      end)
+      |> then(fn {scan, _} -> scan |> Enum.reverse() end)
+    end)
+
+  0..(h - 1)
+  |> Enum.map(fn y ->
+    0..(w - 1)
+    |> Enum.map(fn x ->
+      h = horizontal |> Enum.at(y) |> Enum.at(x)
+      v = vertical |> Enum.at(x) |> Enum.at(y)
+      dot = get.({x, y}) == ?.
+      not_cycle = {x, y} not in cycle
+
+      # {h, v, dot}
+      if h and v and not_cycle do
+        1
+      else
+        0
+      end
+    end)
+  end)
+  |> List.flatten()
+  |> Enum.sum()
+end
+
+solution102.(sample102_1)
+```
+
+```elixir
+solution102.(sample102_2)
+```
+
+```elixir
+solution102.(sample102_3)
+```
+
+```elixir
+solution102 = fn input ->
+  map = input |> String.split("\n", trim: true) |> Enum.map(&String.to_charlist/1)
+  h = map |> Enum.count()
+  w = map |> Enum.at(0) |> Enum.count()
+
+  outside? = fn {x, y} -> x < 0 or x >= w or y < 0 or y >= h end
+
+  get = fn {x, y} = p ->
+    if outside?.(p) do
+      ?.
+    else
+      map |> Enum.at(y) |> Enum.at(x)
+    end
+  end
+
+  neighbor = fn {x, y} = p ->
+    n = {x, y - 1}
+    s = {x, y + 1}
+    w = {x - 1, y}
+    e = {x + 1, y}
+
+    get.(p)
+    |> case do
+      ?| -> [n, s]
+      ?- -> [e, w]
+      ?L -> [n, e]
+      ?J -> [n, w]
+      ?7 -> [s, w]
+      ?F -> [s, e]
+      ?. -> []
+      ?S -> [n, s, w, e]
+    end
+    |> Enum.filter(fn p -> not outside?.(p) end)
+  end
+
+  next = fn last, cur ->
+    neighbor.(cur) |> Enum.filter(fn p -> p != last end) |> List.first()
+  end
+
+  fy = map |> Enum.find_index(fn line -> ?S in line end)
+  fx = map |> Enum.at(fy) |> Enum.find_index(fn c -> c == ?S end)
+  first = {fx, fy}
+
+  second = neighbor.(first) |> Enum.filter(fn n -> first in neighbor.(n) end) |> List.first()
+
+  find_cycle = fn [cur, last | _] = path, find_cycle ->
+    case next.(last, cur) do
+      ^first -> path |> Enum.reverse()
+      p -> find_cycle.([p | path], find_cycle)
+    end
+  end
+
+  [^first, ^second | _] = cycle = find_cycle.([second, first], find_cycle)
+  last = cycle |> List.last()
+
+  find_dir = fn
+    {x, y}, {bx, y} ->
+      cond do
+        x == bx - 1 -> :w
+        x == bx + 1 -> :e
+      end
+
+    {x, y}, {x, by} ->
+      cond do
+        y == by - 1 -> :n
+        y == by + 1 -> :s
+      end
+  end
+
+  first_type =
+    [last, second]
+    |> Enum.map(fn p -> find_dir.(p, first) end)
+    |> Enum.sort()
+    |> case do
+      [:e, :n] -> ?L
+      [:e, :s] -> ?F
+      [:e, :w] -> ?-
+      [:n, :s] -> ?|
+      [:n, :w] -> ?J
+      [:s, :w] -> ?7
+    end
+
+  get_border_type = fn p ->
+    cond do
+      p == first -> first_type
+      p in cycle -> get.(p)
+      true -> nil
+    end
+  end
+
+  horizontal =
+    0..(h - 1)
+    |> Enum.map(fn y ->
+      1..(w - 1)
+      |> Enum.reduce({[false], nil}, fn x, {[last_scan | _] = scan, bend} ->
+        last_border_type = get_border_type.({x - 1, y})
+
+        case {last_scan, bend, last_border_type} do
+          {_, _, ?|} -> {[not last_scan | scan], bend}
+          {_, _, ?-} -> {[last_scan | scan], bend}
+          {_, nil, type} when type in [?L, ?F] -> {[last_scan | scan], type}
+          {_, nil, nil} -> {[last_scan | scan], nil}
+          {_, ?L, ?J} -> {[last_scan | scan], nil}
+          {_, ?L, ?7} -> {[not last_scan | scan], nil}
+          {_, ?F, ?7} -> {[last_scan | scan], nil}
+          {_, ?F, ?J} -> {[not last_scan | scan], nil}
+        end
+      end)
+      |> then(fn {scan, _} -> scan |> Enum.reverse() end)
+    end)
+
+  vertical =
+    0..(w - 1)
+    |> Enum.map(fn x ->
+      1..(h - 1)
+      |> Enum.reduce({[false], nil}, fn y, {[last_scan | _] = scan, bend} ->
+        last_border_type = get_border_type.({x, y - 1})
+
+        case {last_scan, bend, last_border_type} do
+          {_, _, ?-} -> {[not last_scan | scan], bend}
+          {_, _, ?|} -> {[last_scan | scan], bend}
+          {_, nil, type} when type in [?F, ?7] -> {[last_scan | scan], type}
+          {_, nil, nil} -> {[last_scan | scan], nil}
+          {_, ?F, ?L} -> {[last_scan | scan], nil}
+          {_, ?F, ?J} -> {[not last_scan | scan], nil}
+          {_, ?7, ?J} -> {[last_scan | scan], nil}
+          {_, ?7, ?L} -> {[not last_scan | scan], nil}
+        end
+      end)
+      |> then(fn {scan, _} -> scan |> Enum.reverse() end)
+    end)
+
+  0..(h - 1)
+  |> Enum.map(fn y ->
+    0..(w - 1)
+    |> Enum.map(fn x ->
+      h = horizontal |> Enum.at(y) |> Enum.at(x)
+      v = vertical |> Enum.at(x) |> Enum.at(y)
+      dot = get.({x, y}) == ?.
+      c = {x, y} in cycle
+
+      # {h, v, dot}
+      if dot do
+        ~c"."
+      else
+        ~c"X"
+      end
+    end)
+    |> to_string()
+  end)
+  |> Enum.join("\n")
+  |> IO.puts()
+
+  # |> List.flatten()
+  # |> Enum.filter(& &1)
+  # |> Enum.count()
+end
+
+solution102.(sample102_3)
+```
+
+```elixir
+solution102.(input102)
 ```
