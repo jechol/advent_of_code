@@ -5399,33 +5399,41 @@ input111 = """
 ```
 
 ```elixir
-solution111 = fn input ->
+solution111 = fn input, expand_multiplier ->
   map =
     input
     |> String.split("\n", trim: true)
     |> Enum.map(fn line ->
       line
       |> String.to_charlist()
-      |> Enum.map(fn c -> c == ?# end)
+      |> Enum.map(fn
+        ?. -> 1
+        ?# -> "#"
+      end)
     end)
 
-  duplicate_if_empty = fn line ->
-    if line |> Enum.all?(fn v -> not v end) do
-      [line, line]
+  # |> IO.inspect(label: "before")
+
+  expand = fn line ->
+    if line |> Enum.all?(fn v -> v != "#" end) do
+      line |> Enum.map(fn _v -> expand_multiplier end)
     else
-      [line]
+      line
     end
   end
 
-  map = map |> Enum.flat_map(duplicate_if_empty)
+  map = map |> Enum.map(expand)
+  # |> IO.inspect(label: "vertical")
 
   map =
     map
     |> Enum.zip()
     |> Enum.map(&Tuple.to_list/1)
-    |> Enum.flat_map(duplicate_if_empty)
+    |> Enum.map(expand)
     |> Enum.zip()
     |> Enum.map(&Tuple.to_list/1)
+
+  # |> IO.inspect(label: "horizontal")
 
   gals =
     map
@@ -5434,10 +5442,26 @@ solution111 = fn input ->
       line
       |> Enum.with_index()
       |> Enum.flat_map(fn
-        {false, _} -> []
-        {true, x} -> [{x, y}]
+        {"#", x} -> [{x, y}]
+        {_, _} -> []
       end)
     end)
+
+  [x_dist, y_dist] =
+    [map |> List.first(), map |> Stream.zip() |> Enum.at(0) |> Tuple.to_list()]
+    |> Enum.map(fn dist ->
+      dist
+      |> Enum.map(fn
+        "#" -> 1
+        dist when is_integer(dist) -> dist
+      end)
+    end)
+    |> IO.inspect()
+
+  dist = fn from, to, dist ->
+    dist |> Stream.drop(from) |> Stream.take(to - from) |> Enum.sum()
+    # from..(to-1)//1 |> Enum.map(fn i -> dist |> Enum.at(i) end) |> Enum.sum()
+  end
 
   gals
   |> Enum.flat_map(fn a ->
@@ -5447,14 +5471,20 @@ solution111 = fn input ->
     end)
   end)
   |> Enum.map(fn {{a, b}, {x, y}} ->
-    abs(a - x) + abs(b - y)
+    [a, x] = [a, x] |> Enum.sort()
+    [b, y] = [b, y] |> Enum.sort()
+    dist.(a, x, x_dist) + dist.(b, y, y_dist)
   end)
   |> Enum.sum()
 end
 
-solution111.(sample111)
+solution111.(sample111, 2)
 ```
 
 ```elixir
-solution111.(input111)
+solution111.(input111, 2)
+```
+
+```elixir
+
 ```
