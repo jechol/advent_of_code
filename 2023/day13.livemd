@@ -1396,3 +1396,61 @@ Aoc2023.Day13.Part1.run(sample)
 ```elixir
 Aoc2023.Day13.Part1.run(input)
 ```
+
+## Part 2
+
+```elixir
+defmodule Aoc2023.Day13.Part2 do
+  def find_hori_reflection(rows) do
+    width = rows |> List.first() |> Enum.count()
+
+    1..(width - 1)
+    |> Enum.find(fn left ->
+      cols = min(left, width - left)
+
+      diff =
+        rows
+        |> Enum.map(fn row ->
+          0..(cols - 1)
+          |> Enum.map(fn offset ->
+            if Enum.at(row, left - 1 - offset) == Enum.at(row, left + offset) do
+              0
+            else
+              1
+            end
+          end)
+          |> Enum.sum()
+        end)
+        |> Enum.sum()
+
+      diff == 1
+    end) ||
+      0
+  end
+
+  def find_vert_reflection(rows) do
+    v = rows |> Enum.zip() |> Enum.map(&Tuple.to_list/1) |> find_hori_reflection()
+    v * 100
+  end
+
+  def find_reflection(rows) do
+    find_hori_reflection(rows) + find_vert_reflection(rows)
+  end
+
+  def run(input) do
+    input
+    |> String.split("\n")
+    |> Enum.chunk_by(fn s -> s == "" end)
+    |> Enum.filter(fn map -> map != [""] end)
+    |> Enum.map(fn m -> m |> Enum.map(fn l -> l |> String.split("", trim: true) end) end)
+    |> Enum.map(&find_reflection/1)
+    |> Enum.sum()
+  end
+end
+
+Aoc2023.Day13.Part2.run(sample)
+```
+
+```elixir
+Aoc2023.Day13.Part2.run(input)
+```
