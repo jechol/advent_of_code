@@ -161,3 +161,111 @@ Aoc2023.Day13.Part1.run(sample)
 ```elixir
 Aoc2023.Day13.Part1.run(input)
 ```
+
+## Part 2
+
+```elixir
+defmodule Aoc2023.Day13.Part2 do
+  def north_load(rows) do
+    height = rows |> Enum.count()
+
+    rows
+    |> Enum.zip()
+    |> Enum.map(fn row ->
+      row = row |> Tuple.to_list()
+
+      row
+      |> Enum.with_index()
+      |> Enum.map(fn {e, i} ->
+        case e do
+          "O" -> height - i
+          _ -> 0
+        end
+      end)
+      |> Enum.sum()
+    end)
+    |> Enum.sum()
+  end
+
+  def tilt_north(rows) do
+    rows
+    |> Enum.zip()
+    |> Enum.map(&Tuple.to_list/1)
+    |> tilt_west()
+    |> Enum.zip()
+    |> Enum.map(&Tuple.to_list/1)
+  end
+
+  def tilt_west(rows) do
+    height = rows |> Enum.count()
+
+    rows
+    |> Enum.map(fn row ->
+      row
+      |> Enum.with_index()
+      |> Enum.reduce({0, [], []}, fn {c, i}, {rounded_pos, rounded, sharp} ->
+        case c do
+          "." -> {rounded_pos, rounded, sharp}
+          "#" -> {i + 1, rounded, [i | sharp]}
+          "O" -> {rounded_pos + 1, [rounded_pos | rounded], sharp}
+        end
+      end)
+      |> then(fn {_, rounded, sharp} ->
+        0..(height - 1)
+        |> Enum.map(fn i ->
+          cond do
+            i in rounded -> "O"
+            i in sharp -> "#"
+            true -> "."
+          end
+        end)
+      end)
+    end)
+  end
+
+  def tilt_south(rows) do
+    rows |> Enum.reverse() |> tilt_north() |> Enum.reverse()
+  end
+
+  def tilt_east(rows) do
+    rows
+    |> Enum.map(fn row -> row |> Enum.reverse() end)
+    |> tilt_west()
+    |> Enum.map(fn row -> row |> Enum.reverse() end)
+  end
+
+  def cycle(rows) do
+    rows |> tilt_north() |> tilt_west() |> tilt_south() |> tilt_east()
+  end
+
+  def run(input) do
+    input_map =
+      input
+      |> String.split("\n", trim: true)
+      |> Enum.map(fn row -> row |> String.split("", trim: true) end)
+
+    {start_map, loop} =
+      Stream.iterate(0, &(&1 + 1))
+      |> Enum.reduce_while([input_map], fn _i, [last_map | _] = maps ->
+        new_map = last_map |> cycle()
+
+        if Enum.find_index(maps, fn map -> map == new_map end) do
+          {:halt, {new_map, maps |> Enum.reverse()}}
+        else
+          {:cont, [new_map | maps]}
+        end
+      end)
+
+    start_index = loop |> Enum.find_index(fn m -> m == start_map end)
+    loop_size = Enum.count(loop) - start_index
+
+    loop |> Enum.at(rem(1_000_000_000 - start_index, loop_size) + start_index) |> north_load()
+  end
+end
+
+Aoc2023.Day13.Part2.run(sample)
+```
+
+```elixir
+Aoc2023.Day13.Part2.run(input)
+```
