@@ -172,9 +172,8 @@ defmodule Aoc2023.Day13.Part2 do
     rows
     |> Enum.zip()
     |> Enum.map(fn row ->
-      row = row |> Tuple.to_list()
-
       row
+      |> Tuple.to_list()
       |> Enum.with_index()
       |> Enum.map(fn {e, i} ->
         case e do
