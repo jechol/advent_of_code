@@ -29,10 +29,60 @@ defmodule Aoc2023.Day15.Part1 do
     |> Enum.reduce(0, &add/2)
   end
 
+  def install(lenses, label, focal) do
+    if lenses |> Enum.find(fn {l, _} -> l == label end) do
+      lenses
+      |> Enum.map(fn
+        {^label, _} -> {label, focal}
+        {_, _} = other -> other
+      end)
+    else
+      lenses ++ [{label, focal}]
+    end
+  end
+
+  def uninstall(lenses, label) do
+    lenses
+    |> Enum.filter(fn {l, _} -> l != label end)
+  end
+
+  def focusing_powers({i, lenses}) do
+    lenses
+    |> Enum.with_index(1)
+    |> Enum.map(fn {{_, focal}, j} ->
+      (i + 1) * j * focal
+    end)
+  end
+
   def run(input) do
+    boxes = 0..255 |> Enum.map(fn i -> {i, []} end) |> Enum.into(%{})
+
     input
     |> String.split([",", "\n"], trim: true)
-    |> Enum.map(&hash/1)
+    |> Enum.map(fn step ->
+      if step |> String.contains?("=") do
+        [label, focal] = step |> String.split("=", trim: true)
+        {label, "=", focal |> String.to_integer()}
+      else
+        [label] = step |> String.split("-", trim: true)
+        {label, "-"}
+      end
+    end)
+    |> Enum.reduce(boxes, fn
+      {label, "-"}, boxes ->
+        box_no = label |> hash()
+        box = boxes |> Map.fetch!(box_no)
+        boxes |> Map.put(box_no, box |> uninstall(label))
+
+      {label, "=", focal}, boxes ->
+        box_no = label |> hash()
+        box = boxes |> Map.fetch!(box_no)
+        boxes |> Map.put(box_no, box |> install(label, focal))
+    end)
+    |> Enum.filter(fn {_k, v} -> v != [] end)
+    |> Enum.sort()
+    |> Enum.map(&focusing_powers/1)
+    |> Enum.map(&Enum.sum/1)
     |> Enum.sum()
   end
 end
