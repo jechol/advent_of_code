@@ -219,11 +219,11 @@ defmodule Aoc2023.Day16.Part2 do
   end
 
   def line({sx, sy}, {sx, ey}) do
-    sy..ey//if(sy < ey, do: 1, else: -1) |> Enum.map(fn y -> {sx, y} end)
+    sy..ey//if(sy < ey, do: 1, else: -1) |> Enum.map(fn y -> {sx, y} end) |> MapSet.new()
   end
 
   def line({sx, sy}, {ex, sy}) do
-    sx..ex//if(sx < ex, do: 1, else: -1) |> Enum.map(fn x -> {x, sy} end)
+    sx..ex//if(sx < ex, do: 1, else: -1) |> Enum.map(fn x -> {x, sy} end) |> MapSet.new()
   end
 
   def unit_paths({map, w, h} = map_info, vectors) do
@@ -231,13 +231,54 @@ defmodule Aoc2023.Day16.Part2 do
     |> Enum.map(fn {sx, sy, sdir} = starting_vector ->
       {{ex, ey} = ep, edirs} = find_endpoint(map_info, {sx, sy}, sdir)
       ending_vectors = edirs |> Enum.map(fn edir -> {ex, ey, edir} end)
-      {{sx, sy, sdir}, line({sx, sy}, {ex, ey}), ending_vectors}
+      {{sx, sy, sdir}, line({sx, sy}, {ex, ey}), ending_vectors, [starting_vector]}
     end)
     |> MapSet.new()
   end
 
-  def merge_paths({map, w, h} = map_info, paths) do
-    paths
+  def merge_paths({map, w, h} = map_info, paths, i \\ 0) do
+    new_paths =
+      paths
+      |> Enum.map(fn {sv, line, evs, pvs} ->
+        {line, evs, pvs} =
+          evs
+          |> Enum.reduce({line, [], pvs}, fn ev, {line, evs, pvs} ->
+            paths
+            |> Enum.find(fn
+              {^ev, new_line, new_evs, new_pvs} -> true
+              {_sv, _line, _evs, _pvs} -> false
+            end)
+            |> case do
+              nil ->
+                {line, evs, pvs}
+
+              {^ev, new_line, new_evs, new_pvs} ->
+                {MapSet.union(new_line, line), new_evs ++ evs, new_pvs}
+            end
+          end)
+
+        evs = evs |> Enum.uniq() |> Enum.filter(fn ev -> ev not in pvs end)
+        {sv, line, evs, pvs |> Enum.uniq()}
+      end)
+      |> MapSet.new()
+
+    # if new_paths |> Enum.all?(fn {_, _, evs, _} -> evs == [] end) do
+    #   new_paths
+    # else
+    #   merge_paths(map_info, new_paths)
+    # end
+
+    if i == 10 do
+      new_paths
+    else
+      merge_paths(map_info, new_paths, i + 1)
+    end
+
+    # if new_paths == paths do
+    #   new_paths
+    # else
+    #   merge_paths(map_info, new_paths)
+    # end
   end
 
   def run(input) do
@@ -253,9 +294,13 @@ defmodule Aoc2023.Day16.Part2 do
 
     unit_vectors = unit_vectors(map_info)
     unit_paths = unit_paths(map_info, unit_vectors)
-    merge_paths(map_info, unit_paths)
 
-    # paths = find_paths(map_info, expanded_vectors, 1)
+    merge_paths(map_info, unit_paths)
+    |> Enum.map(fn {sv, line, evs, pvs} ->
+      {sv, line |> Enum.sort(), evs, pvs}
+    end)
+    |> Enum.sort()
+    |> Enum.take(2)
   end
 end
 
