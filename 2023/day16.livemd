@@ -126,3 +126,133 @@ Aoc2023.Day16.Part1.run(sample)
 ```elixir
 Aoc2023.Day16.Part1.run(input)
 ```
+
+## Part 2
+
+```elixir
+defmodule Aoc2023.Day16.Part2 do
+  def get({map, w, h} = map_info, {x, y}) do
+    if x >= 0 and x < w and y >= 0 and y < h do
+      map |> Enum.at(y) |> Enum.at(x)
+    else
+      :outside
+    end
+  end
+
+  def split(dir, splitter) do
+    case {dir, splitter} do
+      {dir, "."} -> [dir]
+      {hori, "-"} when hori in [:left, :right] -> [hori]
+      {hori, "|"} when hori in [:left, :right] -> [:up, :down]
+      {vert, "-"} when vert in [:up, :down] -> [:left, :right]
+      {vert, "|"} when vert in [:up, :down] -> [vert]
+      {:left, "\\"} -> [:up]
+      {:right, "\\"} -> [:down]
+      {:up, "\\"} -> [:left]
+      {:down, "\\"} -> [:right]
+      {:left, "/"} -> [:down]
+      {:right, "/"} -> [:up]
+      {:up, "/"} -> [:right]
+      {:down, "/"} -> [:left]
+    end
+  end
+
+  def side_vectors({map, w, h}) do
+    [
+      0..(h - 1) |> Enum.map(fn y -> {0, y, :right} end),
+      0..(h - 1) |> Enum.map(fn y -> {w - 1, y, :left} end),
+      0..(w - 1) |> Enum.map(fn x -> {x, 0, :down} end),
+      0..(w - 1) |> Enum.map(fn x -> {x, h - 1, :up} end)
+    ]
+    |> Enum.flat_map(& &1)
+    |> Enum.flat_map(fn {x, y, dir} ->
+      splitter = map |> Enum.at(y) |> Enum.at(x)
+      split(dir, splitter) |> Enum.map(fn dir -> {x, y, dir} end)
+    end)
+  end
+
+  def splitter_vectors({map, w, h}) do
+    0..(h - 1)
+    |> Enum.flat_map(fn y ->
+      0..(w - 1)
+      |> Enum.flat_map(fn x ->
+        case map |> Enum.at(y) |> Enum.at(x) do
+          "." ->
+            []
+
+          "-" ->
+            [:left, :right] |> Enum.map(fn dir -> {x, y, dir} end)
+
+          "|" ->
+            [:up, :down] |> Enum.map(fn dir -> {x, y, dir} end)
+
+          d when d in ["\\", "/"] ->
+            [:left, :right, :up, :down] |> Enum.map(fn dir -> {x, y, dir} end)
+        end
+      end)
+    end)
+    |> Enum.filter(fn {x, y, _} -> x >= 0 and x < w and y >= 0 and y < h end)
+  end
+
+  def unit_vectors(map_info) do
+    MapSet.new(side_vectors(map_info) ++ splitter_vectors(map_info))
+  end
+
+  def advance(x, y, dir) do
+    case dir do
+      :left -> {x - 1, y}
+      :right -> {x + 1, y}
+      :up -> {x, y - 1}
+      :down -> {x, y + 1}
+    end
+  end
+
+  def find_endpoint({map, w, h} = map_info, {x, y} = point, dir) do
+    next_point = advance(x, y, dir)
+    next_tile = get(map_info, next_point)
+
+    case next_tile do
+      "." -> find_endpoint(map_info, next_point, dir)
+      :outside -> {point, []}
+      splitter -> {next_point, split(dir, splitter)}
+    end
+  end
+
+  def line({sx, sy}, {sx, ey}) do
+    sy..ey//if(sy < ey, do: 1, else: -1) |> Enum.map(fn y -> {sx, y} end)
+  end
+
+  def line({sx, sy}, {ex, sy}) do
+    sx..ex//if(sx < ex, do: 1, else: -1) |> Enum.map(fn x -> {x, sy} end)
+  end
+
+  def expand_vectors({map, w, h} = map_info, vectors) do
+    vectors
+    |> Enum.map(fn {sx, sy, sdir} = starting_vector ->
+      {{ex, ey} = ep, edirs} = find_endpoint(map_info, {sx, sy}, sdir)
+      ending_vectors = edirs |> Enum.map(fn edir -> {ex, ey, edir} end)
+      {{sx, sy, sdir}, line({sx, sy}, {ex, ey}), ending_vectors}
+    end)
+    |> MapSet.new()
+  end
+
+  def run(input) do
+    map =
+      input
+      |> String.split("\n", trim: true)
+      |> Enum.map(fn row -> String.split(row, "", trim: true) end)
+
+    w = map |> List.first() |> Enum.count()
+    h = map |> Enum.count()
+
+    map_info = {map, w, h}
+
+    vectors = unit_vectors(map_info)
+    paths = unit_paths(map_info, vectors)
+
+    # paths = find_paths(map_info, expanded_vectors, 1)
+  end
+end
+
+Aoc2023.Day16.Part2.run(sample)
+```
