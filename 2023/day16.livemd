@@ -226,7 +226,7 @@ defmodule Aoc2023.Day16.Part2 do
     sx..ex//if(sx < ex, do: 1, else: -1) |> Enum.map(fn x -> {x, sy} end)
   end
 
-  def expand_vectors({map, w, h} = map_info, vectors) do
+  def unit_paths({map, w, h} = map_info, vectors) do
     vectors
     |> Enum.map(fn {sx, sy, sdir} = starting_vector ->
       {{ex, ey} = ep, edirs} = find_endpoint(map_info, {sx, sy}, sdir)
