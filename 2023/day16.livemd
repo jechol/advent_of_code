@@ -236,6 +236,10 @@ defmodule Aoc2023.Day16.Part2 do
     |> MapSet.new()
   end
 
+  def merge_paths({map, w, h} = map_info, paths) do
+    paths
+  end
+
   def run(input) do
     map =
       input
@@ -247,8 +251,9 @@ defmodule Aoc2023.Day16.Part2 do
 
     map_info = {map, w, h}
 
-    vectors = unit_vectors(map_info)
-    paths = unit_paths(map_info, vectors)
+    unit_vectors = unit_vectors(map_info)
+    unit_paths = unit_paths(map_info, unit_vectors)
+    merge_paths(map_info, unit_paths)
 
     # paths = find_paths(map_info, expanded_vectors, 1)
   end
